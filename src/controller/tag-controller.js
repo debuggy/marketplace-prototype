@@ -1,4 +1,4 @@
-const { MarketplaceItem, Tag } = require("./sequelize_models");
+const { MarketplaceItem, Tag } = require("../sequelize_models");
 
 const list = (req, res, next) => {
   MarketplaceItem.findOne({ where: { id: req.params.itemId } })

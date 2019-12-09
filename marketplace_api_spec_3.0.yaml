@@ -147,6 +147,89 @@ paths:
           $ref: "#/components/responses/404NotFound"
         405:
           $ref: "#/components/responses/InvalidInput"
+  /marketplace/items/{itemId}/starUsers:
+    get:
+      summary: "Get star users of specific marketplace item"
+      parameters:
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+        404:
+          $ref: "#/components/responses/404NotFound"
+  /user/{username}/starItems:
+    get:
+      summary: "list star items of a specific user"
+      parameters:
+        - name: username
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MarketplaceItemRes"
+        404:
+          $ref: "#/components/responses/404NotFound"
+  /user/{username}/starItems/{itemId}:
+    parameters:
+      - name: username
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: itemId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      summary: "Get the stared marketplace item info of a user, 404 if user not stared"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MarketplaceItemRes"
+        404:
+          $ref: "#/components/responses/404NotFound"
+    put:
+      summary: "Star the marketplace item, 409 if already stared"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MarketplaceItemReq"
+      responses:
+        200:
+          description: OK
+        409:
+          description: Conflict
+    delete:
+      summary: "Unstar the item if stared, 404 if not stared"
+      responses:
+        200:
+          description: OK
+        404:
+          $ref: "#/components/responses/404NotFound"
 
 components:
   schemas:
@@ -209,9 +292,18 @@ components:
       properties:
         value:
           type: string
+    User:
+      type: object
+      properties:
+        name:
+          type: string
 
   responses:
     404NotFound:
       description: The specified resource was not found.
     InvalidInput:
       description: Invalid input
+# Added by API Auto Mocking Plugin
+servers:
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/debuggy/marketplace/1.0.0

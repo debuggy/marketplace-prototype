@@ -7,12 +7,11 @@ module.exports = (sequelize, DataTypes) => {
     description: DataTypes.TEXT,
     jobConfig: DataTypes.JSON,
     submits: DataTypes.INTEGER,
-    starNumber: DataTypes.INTEGER,
-    starUsers: DataTypes.ARRAY(DataTypes.STRING) // eslint-disable-line new-cap
   });
 
   MarketplaceItem.associate = models => {
     models.MarketplaceItem.belongsToMany(models.Tag, { through: "ItemTag" });
+    models.MarketplaceItem.belongsToMany(models.User, { through: "StarRelation" });
   };
 
   return MarketplaceItem;

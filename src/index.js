@@ -8,10 +8,14 @@ app.get("/", function(req, res) {
   res.send("Hello World!");
 });
 
-app.use("/marketplace", router);
+app.use("/", router);
 
-init(true).then(() => {
-  app.listen(3000, function() {
-    console.log("Example app listening on port 3000!");
+init(true)
+  .then(() => {
+    app.listen(3000, function() {
+      console.log("Example app listening on port 3000!");
+    });
+  })
+  .catch(e => {
+    console.log(e);
   });
-});

@@ -1,5 +1,5 @@
 const { Op } = require("sequelize");
-const { MarketplaceItem, Tag } = require("./sequelize_models");
+const { MarketplaceItem, Tag } = require("../sequelize_models");
 
 const list = (req, res, next) => {
   const includeStatement = {};
@@ -71,11 +71,22 @@ const del = (req, res, next) => {
     });
 };
 
+const listStarUsers = (req, res, next) => {
+  MarketplaceItem.findOne({ where: { id: req.params.itemId } })
+    .then(item => {
+      return item.getUsers();
+    })
+    .then(result => {
+      res.status(200).json(result.map(user => user.name));
+    });
+};
+
 // module exports
 module.exports = {
   list,
   create,
   get,
   update,
-  del
+  del,
+  listStarUsers
 };
