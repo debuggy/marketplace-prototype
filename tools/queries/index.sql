@@ -1,0 +1,1 @@
+create index tag_index on test_gin using gin(tags)
