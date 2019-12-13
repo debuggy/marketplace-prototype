@@ -2,10 +2,16 @@ openapi: 3.0.0
 info:
   version: "1.0.0"
   title: "Marketplace API"
+tags:
+  - name: marketplace
+  - name: tag
+  - name: star
 paths:
   /marketplace/items:
     post:
-      summary: "Add a new marketplace item"
+      tags:
+        - marketplace
+      summary: Add a new marketplace item
       requestBody:
         required: true
         content:
@@ -22,7 +28,9 @@ paths:
         405:
           $ref: "#/components/responses/InvalidInput"
     get:
-      summary: "List marketplace items"
+      tags:
+        - marketplace
+      summary: List marketplace items
       parameters:
         - in: query
           name: author
@@ -32,12 +40,6 @@ paths:
           name: name
           schema:
             type: string
-        - in: query
-          name: tags
-          schema:
-            type: array
-            items:
-              type: string
         - in: query
           name: catagory
           schema:
@@ -54,7 +56,9 @@ paths:
 
   /marketplace/items/{itemId}:
     get:
-      summary: "Get specific marketplace item info"
+      tags:
+        - marketplace
+      summary: Get specific marketplace item info
       parameters:
         - name: itemId
           in: path
@@ -71,7 +75,9 @@ paths:
         404:
           $ref: "#/components/responses/404NotFound"
     put:
-      summary: "Update a marketplace item"
+      tags:
+        - marketplace
+      summary: Update a marketplace item
       parameters:
         - name: itemId
           in: path
@@ -92,7 +98,9 @@ paths:
         405:
           $ref: "#/components/responses/InvalidInput"
     delete:
-      summary: "delete a marketplace item"
+      tags:
+        - marketplace
+      summary: delete a marketplace item
       parameters:
         - name: itemId
           in: path
@@ -106,7 +114,9 @@ paths:
           $ref: "#/components/responses/404NotFound"
   /marketplace/items/{itemId}/tags:
     get:
-      summary: "Get tags of specific marketplace item"
+      tags:
+        - tag
+      summary: Get tags of specific marketplace item
       parameters:
         - name: itemId
           in: path
@@ -124,32 +134,54 @@ paths:
                   $ref: "#/components/schemas/Tag"
         404:
           $ref: "#/components/responses/404NotFound"
-    put:
-      summary: "Update tags of a marketplace item"
-      parameters:
-        - name: itemId
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
+  /marketplace/items/{itemId}/tags/{tagName}:
+    parameters:
+      - name: itemId
+        in: path
         required: true
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                $ref: "#/components/schemas/MarketplaceItemReq"
+        schema:
+          type: string
+      - name: tagName
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - tag
+      summary: Get the tag name of item, 404 if tag not found
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tag"
+        404:
+          $ref: "#/components/responses/404NotFound"
+    put:
+      tags:
+        - tag
+      summary: Add a tag to item, 409 if item already has this tag
+      responses:
+        200:
+          description: OK
+        409:
+          description: Conflict
+    delete:
+      tags:
+        - tag
+      summary: Unstar the item if stared, 404 if not stared
       responses:
         200:
           description: OK
         404:
           $ref: "#/components/responses/404NotFound"
-        405:
-          $ref: "#/components/responses/InvalidInput"
   /marketplace/items/{itemId}/starUsers:
     get:
-      summary: "Get star users of specific marketplace item"
+      tags:
+        - star
+      summary: Get star users of specific marketplace item
       parameters:
         - name: itemId
           in: path
@@ -167,9 +199,45 @@ paths:
                   $ref: "#/components/schemas/User"
         404:
           $ref: "#/components/responses/404NotFound"
+  /marketplace/tags/:
+    get:
+      tags:
+        - tag
+      summary: List all tags
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Tag"
+  /marketplace/tags/{tagName}/items:
+    get:
+      tags:
+        - tag
+      summary: List all items of given tag
+      parameters:
+        - name: tagName
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MarketplaceItemRes"
   /user/{username}/starItems:
     get:
-      summary: "list star items of a specific user"
+      tags:
+        - star
+      summary: list star items of a specific user
       parameters:
         - name: username
           in: path
@@ -200,7 +268,9 @@ paths:
         schema:
           type: string
     get:
-      summary: "Get the stared marketplace item info of a user, 404 if user not stared"
+      tags:
+        - star
+      summary: Get the stared marketplace item info of a user, 404 if user not stared
       responses:
         200:
           description: OK
@@ -211,20 +281,18 @@ paths:
         404:
           $ref: "#/components/responses/404NotFound"
     put:
-      summary: "Star the marketplace item, 409 if already stared"
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/MarketplaceItemReq"
+      tags:
+        - star
+      summary: Star the marketplace item, 409 if already stared
       responses:
         200:
           description: OK
         409:
           description: Conflict
     delete:
-      summary: "Unstar the item if stared, 404 if not stared"
+      tags:
+        - star
+      summary: Unstar the item if stared, 404 if not stared
       responses:
         200:
           description: OK
@@ -252,7 +320,7 @@ components:
           type: number
         starNumber:
           type: number
-        starUsers:
+        tags:
           type: array
           items:
             type: string
@@ -283,14 +351,14 @@ components:
           type: number
         starNumber:
           type: number
-        starUsers:
+        tags:
           type: array
           items:
             type: string
     Tag:
       type: object
       properties:
-        value:
+        name:
           type: string
     User:
       type: object
@@ -303,7 +371,3 @@ components:
       description: The specified resource was not found.
     InvalidInput:
       description: Invalid input
-# Added by API Auto Mocking Plugin
-servers:
-  - description: SwaggerHub API Auto Mocking
-    url: https://virtserver.swaggerhub.com/debuggy/marketplace/1.0.0

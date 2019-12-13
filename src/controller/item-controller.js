@@ -10,8 +10,12 @@ const list = (req, res, next) => {
   if (req.query.author) {
     filterStatement.author = req.query.author;
   }
+  if (req.query.category) {
+    filterStatement.category = req.query.category;
+  }
 
   if (req.query.tags) {
+    // use join query if filter with tags
     MarketplaceItem.findAll({
       where: filterStatement,
       include: [
@@ -20,19 +24,25 @@ const list = (req, res, next) => {
           where: { value: { [Op.in]: [].concat(req.query.tags) } } //format an array if only one tag query
         }
       ]
-    }).then(items => {
-      const result = items.map(item => {
-        const { Tags, ...rest } = item.toJSON();
-        console.log(rest);
-        return rest;
+    })
+      .then(items => {
+        const result = items.map(item => {
+          const { Tags, ...rest } = item.toJSON(); // remove Tags property from join query result
+          return rest;
+        });
+        res.status(200).json(result);
+      })
+      .catch(e => {
+        res.status(500).text(e.message);
       });
-      console.log(result);
-      res.status(200).json(result);
-    });
   } else {
-    MarketplaceItem.findAll().then(result => {
-      res.status(200).json(result);
-    });
+    MarketplaceItem.findAll({ where: filterStatement })
+      .then(result => {
+        res.status(200).json(result);
+      })
+      .catch(e => {
+        res.status(500).text(e.message);
+      });
   }
 };
 
@@ -58,13 +68,14 @@ const update = (req, res, next) => {
 };
 
 const del = (req, res, next) => {
+  let item;
   MarketplaceItem.findOne({ where: { id: req.params.itemId } })
-    .then(item => {
-      item.removeTags();
-      return item;
+    .then(result => {
+      item = result;
+      item.setTags([]);
     })
-    .then(item => {
-      item.destory();
+    .then(() => {
+      item.destroy();
     })
     .then(() => {
       res.status(200).send("deleted");
