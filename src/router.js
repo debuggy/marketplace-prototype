@@ -1,7 +1,7 @@
 const express = require("express");
-const itemController = require("./controller/item-controller");
-const tagController = require("./controller/tag-controller");
-const userController = require("./controller/user-controller");
+const itemController = require("./controllers/item-controller");
+const tagController = require("./controllers/tag-controller");
+const userController = require("./controllers/user-controller");
 
 const router = new express.Router();
 

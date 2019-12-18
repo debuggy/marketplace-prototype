@@ -1,11 +1,16 @@
-const models = require("./sequelize_models");
-const { User, MarketplaceItem } = require("./sequelize_models");
+const models = require("./models");
+const { User, MarketplaceItem } = require("./models");
 
-module.exports = async flag => {
-  if (flag) {
-    await models.sequelize.sync({ force: true });
-    User.create({ name: "mintao" });
-    User.create({ name: "debuggy" });
-    User.create({ name: "test" });
+let SYNC_FLAG = false;
+
+const init = async () => {
+  if (!SYNC_FLAG) {
+    await models.sequelize.sync();
+    await User.create({ name: "mintao" });
+    await User.create({ name: "debuggy" });
+    await User.create({ name: "test" });
+    SYNC_FLAG = true;
   }
 };
+
+module.exports = { init, SYNC_FLAG };
