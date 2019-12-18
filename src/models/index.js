@@ -11,9 +11,9 @@ const SQL_CONNECTION_STR = process.env.SQL_CONNECTION_STR;
 const sequelize = new Sequelize(SQL_CONNECTION_STR);
 
 const models = {
-  MarketplaceItem: MarketplaceItem(sequelize, DataTypes),
-  Tag: Tag(sequelize, DataTypes),
-  User: User(sequelize, DataTypes)
+  MarketplaceItem: new MarketplaceItem(sequelize, DataTypes),
+  Tag: new Tag(sequelize, DataTypes),
+  User: new User(sequelize, DataTypes)
 };
 
 Object.keys(models).forEach(modelName => {

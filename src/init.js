@@ -5,10 +5,10 @@ let SYNC_FLAG = false;
 
 const init = async () => {
   if (!SYNC_FLAG) {
-    await models.sequelize.sync();
-    await User.create({ name: "mintao" });
-    await User.create({ name: "debuggy" });
-    await User.create({ name: "test" });
+    await models.sequelize.sync({ loggin: false });
+    await User.orm.create({ name: "mintao" });
+    await User.orm.create({ name: "debuggy" });
+    await User.orm.create({ name: "test" });
     SYNC_FLAG = true;
   }
 };

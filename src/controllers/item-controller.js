@@ -5,18 +5,11 @@ const { init } = require("../init.js");
 const asyncHandler = require("../asyncHandler");
 
 const list = asyncHandler(async (req, res, next) => {
-  const filterStatement = {};
-  if (req.query.name) {
-    filterStatement.name = req.query.name;
-  }
-  if (req.query.author) {
-    filterStatement.author = req.query.author;
-  }
-  if (req.query.category) {
-    filterStatement.category = req.query.category;
-  }
-
-  const result = await MarketplaceItem.findAll({ where: filterStatement });
+  const result = await MarketplaceItem.list(
+    req.query.name,
+    req.query.author,
+    req.query.category
+  );
   res.status(200).json(result);
 });
 

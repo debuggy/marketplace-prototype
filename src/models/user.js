@@ -1,11 +1,29 @@
-module.exports = (sequelize, DataTypes) => {
-  var User = sequelize.define("User", {
-    name: DataTypes.STRING
-  });
+const { isNil } = require("lodash");
+const dataSyncHandler = require("../dataSyncHandler");
 
-  User.associate = models => {
-    models.User.belongsToMany(models.MarketplaceItem, { through: "StarRelation" });
-  };
+class User {
+  constructor(sequelize, DataTypes) {
+    this.orm = sequelize.define("User", {
+      name: DataTypes.STRING
+    });
+  }
 
-  return User;
-};
+  associate(models) {
+    this.orm.belongsToMany(models.MarketplaceItem.orm, {
+      through: "StarRelation"
+    });
+  }
+
+  async list(username) {
+    return dataSyncHandler(async username => {
+      const user = await User.findOne({ where: { name: username } });
+      if (isNil(user)) {
+        return null;
+      } else {
+        return user.getMarketplaceItems();
+      }
+    });
+  }
+}
+
+module.exports = User;
