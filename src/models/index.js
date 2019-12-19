@@ -3,15 +3,17 @@ const { DataTypes } = require("sequelize");
 const MarketplaceItem = require("./marketplace-item");
 const Tag = require("./tag");
 const User = require("./user");
+const dotnev = require("dotenv");
 
-const SQL_CONNECTION_STR =
-  "postgresql://postgres:123qwe@localhost:54321/openpai";
+dotnev.config();
+
+const SQL_CONNECTION_STR = process.env.SQL_CONNECTION_STR;
 const sequelize = new Sequelize(SQL_CONNECTION_STR);
 
 const models = {
-  MarketplaceItem: MarketplaceItem(sequelize, DataTypes),
-  Tag: Tag(sequelize, DataTypes),
-  User: User(sequelize, DataTypes)
+  MarketplaceItem: new MarketplaceItem(sequelize, DataTypes),
+  Tag: new Tag(sequelize, DataTypes),
+  User: new User(sequelize, DataTypes)
 };
 
 Object.keys(models).forEach(modelName => {
