@@ -1,50 +1,47 @@
-const { MarketplaceItem, User } = require("../models");
-const { isEmpty } = require("lodash");
+const { User } = require("../models");
+const { isEmpty, isNil } = require("lodash");
 const asyncHandler = require("../asyncHandler");
 
 const list = asyncHandler(async (req, res, next) => {
-  const user = await User.findOne({ where: { name: req.params.username } });
-  const items = await user.getMarketplaceItems();
-  res.status(200).json(items);
+  const items = await User.listItems(req.params.username);
+  if (isNil(items)) {
+    res.status(404).send("user not found");
+  } else {
+    res.status(200).json(items);
+  }
 });
 
 const get = asyncHandler(async (req, res, next) => {
-  const user = await User.findOne({ where: { name: req.params.username } });
-  const items = await user.getMarketplaceItems({
-    where: { id: req.params.itemId }
-  });
-  if (isEmpty(items)) {
-    res.status(404).send("not found");
+  const items = await User.getItem(req.params.username, req.params.itemId);
+  if (isNil(items)) {
+    res.status(404).send("user not found");
+  } else if (isEmpty(items)) {
+    res.status(404).send("item not found");
   } else {
     res.status(200).json(items[0]);
   }
 });
 
 const update = asyncHandler(async (req, res, next) => {
-  const user = await User.findOne({ where: { name: req.params.username } });
-  const items = await user.getMarketplaceItems({
-    where: { id: req.params.itemId }
-  });
-  if (isEmpty(items)) {
-    const item = await MarketplaceItem.findOne({
-      where: { id: req.params.itemId }
-    });
-    await user.addMarketplaceItem(item);
-    res.status(200).send("ok");
-  } else {
+  const result = await User.updateItem(req.params.username, req.params.itemId);
+  if (isNil(result)) {
+    res.status(404).send("user not found");
+  } else if (result === "item not exists") {
+    res.status(404).send("item not exists");
+  } else if (result === false) {
     res.status(409).send("conflict");
+  } else if (result === true) {
+    res.status(200).send("ok");
   }
 });
 
 const del = asyncHandler(async (req, res, next) => {
-  const user = await User.findOne({ where: { name: req.params.username } });
-  const items = await user.getMarketplaceItems({
-    where: { id: req.params.itemId }
-  });
-  if (isEmpty(items)) {
-    res.status(404).send("not found");
-  } else {
-    await user.removeMarketplaceItems(items);
+  const result = await User.deleteItem(req.params.username, req.params.itemId);
+  if (isNil(result)) {
+    res.status(404).send("user not found");
+  } else if (result === false) {
+    res.status(404).send("item not found");
+  } else if (result === true) {
     res.status(200).send("ok");
   }
 });

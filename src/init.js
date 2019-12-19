@@ -5,7 +5,7 @@ let SYNC_FLAG = false;
 
 const init = async () => {
   if (!SYNC_FLAG) {
-    await models.sequelize.sync({ loggin: false });
+    await models.sequelize.sync();
     await User.orm.create({ name: "mintao" });
     await User.orm.create({ name: "debuggy" });
     await User.orm.create({ name: "test" });

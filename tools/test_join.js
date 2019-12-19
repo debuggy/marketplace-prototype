@@ -23,8 +23,8 @@ async function main() {
 
   const item1 = await Item.create({ name: "item1", author: "jack" });
   const item2 = await Item.create({ name: "item2", author: "jack" });
-  const tag1 = await Tag.create({ value: "tag1" });
-  const tag2 = await Tag.create({ value: "tag2" });
+  const tag1 = await Tag.create({ name: "tag1" });
+  const tag2 = await Tag.create({ name: "tag2" });
   await item1.addTags([tag1, tag2]);
   await item2.addTags([tag1]);
   const result1 = await item1.getTags();

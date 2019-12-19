@@ -15,40 +15,59 @@ const list = asyncHandler(async (req, res, next) => {
 
 const create = asyncHandler(async (req, res, next) => {
   await MarketplaceItem.create(req.body);
-  res.status(201).send("Created");
+  res.status(201).send("created");
 });
 
 const get = asyncHandler(async (req, res, next) => {
-  const result = await MarketplaceItem.findOne({
-    where: { id: req.params.itemId }
-  });
-  res.status(200).json(result);
+  const result = await MarketplaceItem.get(req.params.itemId);
+  if (isNil(result)) {
+    res.status(404).send("item not found");
+  } else {
+    res.status(200).json(result);
+  }
 });
 
 const update = asyncHandler(async (req, res, next) => {
-  const item = await MarketplaceItem.findOne({
-    where: { id: req.params.itemId }
-  });
-  await item.update(req.body);
-  res.status(200).send("updated");
+  const result = await MarketplaceItem.update(req.params.itemId, req.body);
+  if (isNil(result)) {
+    res.status(404).send("item not found");
+  } else {
+    res.status(200).send("updated");
+  }
 });
 
 const del = asyncHandler(async (req, res, next) => {
-  const item = await MarketplaceItem.findOne({
-    where: { id: req.params.itemId }
-  });
-  await item.destroy();
-  res.status(200).send("deleted");
+  const result = await MarketplaceItem.del(req.params.itemId);
+  if (isNil(result)) {
+    res.status(404).send("item not found");
+  } else {
+    res.status(200).send("deleted");
+  }
+});
+
+const listTags = asyncHandler(async (req, res, next) => {
+  const tags = await MarketplaceItem.listTags(req.params.itemId);
+  if (isNil(tags)) {
+    res.status(404).send("item not found");
+  } else {
+    res.status(200).json(tags.map(tag => tag.name));
+  }
+});
+
+const updateTags = asyncHandler(async (req, res, next) => {
+  const result = await MarketplaceItem.updateTags(req.params.itemId);
+  if (isNil(result)) {
+    res.status(404).send("item not found");
+  } else {
+    res.status(200).json("updated");
+  }
 });
 
 const listStarUsers = asyncHandler(async (req, res, next) => {
-  const item = await MarketplaceItem.findOne({
-    where: { id: req.params.itemId }
-  });
-  if (isNil(item)) {
-    res.status(404).send("Item not found");
+  const users = await MarketplaceItem.listStarUsers(req.params.itemId);
+  if (isNil(users)) {
+    res.status(404).send("item not found");
   } else {
-    const users = await item.getUsers();
     res.status(200).json(users.map(user => user.name));
   }
 });

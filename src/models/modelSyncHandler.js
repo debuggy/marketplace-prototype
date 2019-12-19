@@ -1,23 +1,22 @@
 const { get } = require("lodash");
-const models = require("./models");
 
-const init = async () => {
+const init = async models => {
   await models.sequelize.sync();
   await models.User.orm.create({ name: "mintao" });
   await models.User.orm.create({ name: "debuggy" });
   await models.User.orm.create({ name: "test" });
 };
 
-const dataSyncHandler = fn => {
+const modelSyncHandler = fn => {
   return async (...args) => {
     try {
-      return await fn(...args);
+      return await fn(...args.slice(0, args.length - 1));
     } catch (error) {
       if (get(error, "original.code") === "42P01") {
         // Error 42P01: relation does not exist
         try {
-          await init();
-          return await fn(args);
+          await init(args[args.length - 1]);
+          return await fn(...args.slice(0, args.length - 1));
         } catch (error) {
           throw error;
         }
@@ -29,4 +28,4 @@ const dataSyncHandler = fn => {
 };
 
 // module exports
-module.exports = dataSyncHandler;
+module.exports = modelSyncHandler;
