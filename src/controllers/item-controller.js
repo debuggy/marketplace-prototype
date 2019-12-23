@@ -14,8 +14,8 @@ const list = asyncHandler(async (req, res, next) => {
 });
 
 const create = asyncHandler(async (req, res, next) => {
-  await MarketplaceItem.create(req.body);
-  res.status(201).send("created");
+  const itemId = await MarketplaceItem.create(req.body);
+  res.status(201).json(itemId);
 });
 
 const get = asyncHandler(async (req, res, next) => {

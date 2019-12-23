@@ -1,18 +1,20 @@
 const express = require("express");
 const itemController = require("./controllers/item-controller");
 const userController = require("./controllers/user-controller");
+const param = require('./middlewares/parameter');
+const marketItemInputSchema = require('./config/marketItem');
 
 const router = new express.Router();
 
 router
   .route("/marketplace/items")
   .get(itemController.list)
-  .post(itemController.create);
+  .post(param.validate(marketItemInputSchema.marketItemCreateInputSchema), itemController.create);
 
 router
   .route("/marketplace/items/:itemId")
   .get(itemController.get)
-  .put(itemController.update)
+  .put(param.validate(marketItemInputSchema.marketItemUpdateInputSchema), itemController.update)
   .delete(itemController.del);
 
 router

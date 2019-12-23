@@ -6,10 +6,10 @@ class MarketplaceItem {
     this.orm = sequelize.define("MarketplaceItem", {
       name: DataTypes.STRING,
       author: DataTypes.STRING,
-      category: DataTypes.ARRAY(DataTypes.STRING), // eslint-disable-line new-cap
+      category: DataTypes.STRING, // eslint-disable-line new-cap
       introduction: DataTypes.STRING,
       description: DataTypes.TEXT,
-      jobConfig: DataTypes.JSON,
+      jobConfig: DataTypes.TEXT,
       submits: DataTypes.INTEGER
     });
   }
@@ -59,9 +59,11 @@ class MarketplaceItem {
       if (!isNil(tags)) {
         await this.updateTags(item.id, tags);
       }
+      return item.id;
     });
 
-    await handler(itemReq, this.models);
+    const itemId = await handler(itemReq, this.models);
+    return itemId;
   }
 
   async get(itemId) {
